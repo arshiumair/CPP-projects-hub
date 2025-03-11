@@ -1,2 +1,3 @@
 # Bank-Management-system
-This is a simple prject in c++.
+This repository is created to aid students in cpp programing. this includes different projects for practice. <br>
+Boost up your skills with a collaborative space.
