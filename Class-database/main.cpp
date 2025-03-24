@@ -401,7 +401,7 @@ int main()
                 cout <<"ICIT Database for student record"<<endl;
                 cout <<"___________________________________"<<endl;
                 cout <<"exiting..";
-                return 0;
+                goto end:
             }break;
             default:
             {
@@ -411,6 +411,7 @@ int main()
             }
         }
     }
+    end:
 
     return 0;
 }
