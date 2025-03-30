@@ -8,125 +8,111 @@ using namespace std;
 
 class student{
     private:
-    string name ;
-    string department;
     int roll;
-    string batch;
-    char section;
+    string name, department, batch;
+    char class_Section;
 
     public:
     //setters
     void setname(string name )              { this-> name = name; }
     void setdepartment(string department )  { this-> name = department; }
     void setroll(int roll )                 { this-> roll = roll; }
-    void setbatch(string batch )               { this-> batch = batch; }
-    void setsection(char section)           { this-> section = section; }
+    void setbatch(string batch )            { this-> batch = batch; }
+    void setsection(char class_Section)     { this-> class_Section = class_Section; }
 
     //getters
-    string getname()        { return this->name; }
-    string getdepartment()  { return this->department; }
-    int getroll()           { return this->roll; }
-    string getbatch()          { return this->batch; }
-    char getsection()       { return this->section; }
+    string getname()            { return this->name; }
+    string getdepartment()      { return this->department; }
+    int getroll()               { return this->roll; }
+    string getbatch()           { return this->batch; }
+    char getsection()           { return this->class_Section; }
 
     //creat student data in a cnstructor
-    student(string name, string department, char section, int roll, string batch)
+    student(string name, string department, char class_Section, int roll, string batch)
     {
         this-> name = name;
         this-> department = department;
         this-> roll = roll;
         this-> batch = batch;
-        this-> section = section;
+        this-> class_Section = class_Section;
     }
     //deafult cnstructor
     student() {}
 
 
 };
-
 class studentManagementsystem{
     private:
     vector <student> students;
-
     public:
 
     //add student
-
-    void addstudent(student& studentA)
+    void addstudent(student& Student)
     {    
-        students.push_back(studentA);
+        students.push_back(Student);
     }
 
     //remove student
-
     void removestudent(int roll)
     {
         for(auto it = students.begin(); it != students.end(); it++)
         {
-             
             if(it->getroll()== roll)
             {
                 students.erase(it);
-                cout <<"student with roll no. "<<roll<<" has been removed successfully."<<endl;
+                cout << "student with roll no. " << roll<< " has been removed successfully." << endl;
                 return;
             }
         }
-        cout <<"student with roll no. "<<roll<<" NOT found!"<<endl;
+        cout << "student with roll no. " << roll<< " NOT found!" << endl;
         return;
     }
 
     //display all students in the system
-
     void displaystudents()
     {
         if(students.empty())
         {
-            cout <<"There are no students in the system."<<endl;
+            cout << "There is NO student in the system." << endl;
             return;
         }else
         {  
             int Sno = 1;  
             for( auto temp : students)
             {
-                cout <<"Std#"<<Sno<<endl;
-                cout <<"      Roll: "<<temp.getroll()<<endl;
-                cout <<"      Name: "<<temp.getname()<<endl;
-                cout <<"      Depart.: "<<temp.getdepartment()<<endl;
-                cout <<"      Section: "<<temp.getsection()<<endl;
-                cout <<"      Session: "<<temp.getbatch()<<endl;
-                cout <<"___________________________________"<<endl;
+                cout << "Std: " << Sno<<endl;
+                cout << "      Roll: " << temp.getroll()<<endl;
+                cout << "      Name: " << temp.getname()<<endl;
+                cout << "      Depart.: " << temp.getdepartment()<<endl;
+                cout << "      class_Section: " << temp.getsection()<<endl;
+                cout << "      Session: " << temp.getbatch()<<endl;
+                cout << "___________________________________" << endl;
                 Sno++;
             }
         }
     }
 
-    //search student
-
-    void searchstudent(int roll)
+    //Show student details
+    void show_Student(int roll)
     {
-        cout <<"Searching..."<<endl;
         for(auto it = students.begin(); it != students.end(); it++)
         {
-            
-             
             if(it->getroll()== roll)
             {
-                cout <<"student found."<<endl;
-                cout <<"Roll: "<<it->getroll()<<endl;
-                cout <<"Name: "<<it->getname()<<endl;
-                cout <<"Depart.: "<<it->getdepartment()<<endl;
-                cout <<"Section: "<<it->getsection()<<endl;
-                cout <<"Batch: "<<it->getbatch()<<endl;
-                cout <<"___________________________________"<<endl;
+                cout << "Roll: " << it->getroll()<<endl;
+                cout << "Name: " << it->getname()<<endl;
+                cout << "Depart.: " << it->getdepartment()<<endl;
+                cout << "class_Section: " << it->getsection()<<endl;
+                cout << "Batch: " << it->getbatch()<<endl;
+                cout << "___________________________________" << endl;
                 return;
             }
         }
-        cout <<"student with roll no. "<<roll<<" NOT found!"<<endl;
         return;
     }
 
     //check student in database
-    bool checkstudent(int roll)
+    bool check_Student(int roll)
     {   
         for(auto it = students.begin(); it != students.end(); it++)
         {
@@ -136,37 +122,39 @@ class studentManagementsystem{
             }
         }
         return false;
-    }    
+    } 
     
-    //Show studnet data
-    void showinfo(int rolln)
+    //verify student
+    bool check_Student(int S_roll, string S_department, string S_batch, char S_class_Section)
+    {   
+        for(auto it = students.begin(); it != students.end(); it++)
+        {
+            if(it->getroll()== S_roll && it->getdepartment() == S_department && it->getbatch() == S_batch && it->getsection() == S_class_Section)
+            {
+                return true;
+            }
+        }
+        return false;
+    } 
+    
+    //Edit and push New data
+
+    void Editinfo(int rollNumber, student Newstudent)
     {
         for(auto it = students.begin(); it != students.end(); it++)
         {
-            if(it->getroll()== rolln)
-            {
-                cout <<"Current credentials"<<endl;
-                cout <<"Roll: "<<it->getroll()<<endl;
-                cout <<"Name: "<<it->getname()<<endl;
-                cout <<"Depart.: "<<it->getdepartment()<<endl;
-                cout <<"Section: "<<it->getsection()<<endl;
-                cout <<"Batch: "<<it->getbatch()<<endl;
-                cout <<"___________________________________"<<endl;
+            if(it->getroll()== rollNumber)
+            {   int index = distance(students.begin(),it);
+                students[index]=Newstudent;
             }
         }
     }
 
-    //Edit and push New data
-    void Editinfo(int rolln, student Newstudent)
+    //Home content
+    void showHeader()
     {
-        for(auto it = students.begin(); it != students.end(); it++)
-        {
-            if(it->getroll()== rolln)
-            {   int index = distance(students.begin(),it);
-                students.erase(it); //remove previous data
-                students.insert(students.begin() + index,Newstudent);
-            }
-        }
+        cout << "ICIT Database for student record" << endl;
+        cout << "___________________________________" << endl;
     }
 
 
@@ -174,244 +162,171 @@ class studentManagementsystem{
 
 int main()
 {
-    system("cls");
+    
+    
     studentManagementsystem SMS;
     
-    int choice = 0;
+    int choice = 0, choice2;
+    string name,department,batch ;
+    char class_Section;
+    int rollNumber;
     while(true)
     {    
         switch(choice)
         {
             case 0:
             {
-                system("cls");
-                cout <<"ICIT Database for student record"<<endl;
-                cout <<"___________________________________"<<endl;
-                cout <<"________________Home_______________"<<endl;
-                cout <<"\nChose an operation"<<endl;
-                cout <<"1. Add student\n2. Remove student\n3. Search\n4. Displayall\n5. Edit info\n6. Exit"<<endl;
-                cin >>choice ;
+               SMS.showHeader();
+                cout << "________________Home_______________" << endl;
+                cout << "\nChose an operation" << endl;
+                cout << "1. Add student\n2. Remove student\n3. Search\n4. Displayall\n5. Edit info\n6. Exit" << endl;
+                cin >> choice;
             }break;
             case 1:
             {
-                system("cls");
-                cout <<"ICIT Database for student record"<<endl;
-                cout <<"___________________________________"<<endl;
-                cout <<"______________Add Data_____________"<<endl;
-                string name;
-                string department;
-                string batch;
-                char section;
-                int rolln;
-                cout <<"\nEnter student full name: ";
+               SMS.showHeader();
+                cout << "______________Add Data_____________" << endl;
+                cout << "\nEnter student full name: ";
                 cin.ignore();
                 getline(cin, name);
-                cout <<"Enter student department: ";
+                cout << "Enter student department: ";
                 cin >> department;
                 cout << "Enter student Roll No : ";
-                cin >> rolln;
+                cin >> rollNumber;
                 cout << "Enter student Session (Y_From-To): ";
                 cin >> batch;
-                cout << "Enter student Section (A,B,C): ";
-                cin >> section;
-                student s1(name, department, section, rolln, batch);
-                SMS.addstudent(s1);
-                top1:
-                cout <<"1. Add another\n0. Home"<<endl;
-                int choice2;
-                cin >> choice2;
-                if(choice2 == 1)
+                cout << "Enter student class_Section (A,B,C): ";
+                cin >> class_Section;
+                cout << "Verifying..."<<endl;
+                if(SMS.check_Student(rollNumber, department, batch, class_Section) == true)
                 {
-                    choice = choice2;
-                }else if(choice2 == 0)
-                {
-                    choice = 0;
-                }else
-                {
-                    cout<<"Error..! wrong input"<<endl;
-                    goto top1;
+                    cout << "Student already exist.." <<endl;
+                    SMS.show_Student(rollNumber);
+                    cout << "1. Add another \n0. Home" << endl;
+                    cin >> choice2;
+                    (choice2 == 1)? choice = 1 : choice = 0;
+                }else{
+                    cout << "Added successfully.."<<endl;
+                    student s1(name, department, class_Section, rollNumber, batch);
+                    SMS.addstudent(s1);
+                    cout << "1. Add another\n0. Home" << endl;
+                    cin >> choice2;
+                    (choice2 == 1)? choice = 1 : choice = 0;
                 }
-
             }break;
             case 2:
-            {
-                system("cls");
-                cout <<"ICIT Database for student record"<<endl;
-                cout <<"___________Remove Data__________"<<endl;
-                cout <<"\nEnter roll number > ";
-                int rolln;
-                cin >> rolln;
-                SMS.removestudent(rolln);
+            {                
+                
+                cout << "___________Remove Data__________" << endl;
+                cout << "\nEnter roll number > ";
+                cin >> rollNumber;
+                SMS.removestudent(rollNumber);
                 getch();
-                top2:
-                cout <<"1. Remove another\n0. Home"<<endl;
-                int choice2;
+                cout << "1. Remove another\n0. Home" << endl;
                 cin >> choice2;
-                if(choice2 == 1)
-                {
-                    choice = 2;
-                }else if(choice2 == 0)
-                {
-                    choice = 0;
-                }else
-                {
-                    cout<<"Error..! wrong input"<<endl;
-                    goto top2;
-                }
+                (choice2 == 1)? choice = 2 : choice = 0;
 
             }break;
             case 3:
             {
-                system("cls");
-                cout <<"ICIT Database for student record"<<endl;
-                cout <<"___________________________________"<<endl;
-                cout <<"_______________Search______________"<<endl;
-                cout <<"\nEnter roll number > ";
-                int rolln;
-                cin >> rolln;
-                system("cls");
-                cout <<"ICIT Database for student record"<<endl;
-                cout <<"___________________________________"<<endl;
-                cout <<"_______________Search______________"<<endl;
-                SMS.searchstudent(rolln);
-                getch();
-                top3:
-                cout <<"1. Search another\n0. Home"<<endl;
-                int choice2;
-                cin >> choice2;
-                if(choice2 == 1)
+                SMS.showHeader();
+                cout << "_______________Search______________" << endl;
+                cout << "\nEnter roll number > ";
+                cin >> rollNumber;
+                SMS.showHeader();
+                cout << "_______________Search______________" << endl;
+                if(SMS.check_Student(rollNumber) == true)
                 {
-                    choice = 3;
-                }else if(choice2 == 0)
-                {
-                    choice = 0;
+                    cout << "Student found..."<<endl;
+                    SMS.show_Student(rollNumber);
                 }else
                 {
-                    cout<<"Error..! wrong input"<<endl;
-                    goto top3;
+                    cout<<"Student with roll number '"<<rollNumber<<"' NOT found"<<endl;
                 }
+                
+                getch();
+                cout << "1. Search another\n0. Home" << endl;
+                cin >> choice2;
+                (choice2 == 1)? choice = 3 : choice = 0;
+
             }break;
             case 4:
             {
-                system("cls");
-                cout <<"ICIT Database for student record"<<endl;
-                cout <<"___________________________________"<<endl;
-                cout <<"_____________View List_____________\n"<<endl;
+                SMS.showHeader();
+                cout << "_____________View List_____________\n" << endl;
                 SMS.displaystudents();
                 getch();
                 top4:
-                cout <<"1. Add student\n9. Exit\n0. Home"<<endl;
-                int choice2;
+                cout << "1. Add student\n9. Exit\n0. Home" << endl;
                 cin >> choice2;
-                if(choice2 == 1)
-                {
-                    choice = 1;
-                }else
                 if(choice2 == 9)
                 {
-                    cout <<"exiting..";
-                    return 0;
-                }else if(choice2 == 0)
-                {
-                    choice = 0;
+                    choice = 6;
                 }else
                 {
-                    cout<<"Error..! wrong input"<<endl;
-                    goto top4;
+                   (choice2 == 1)? choice = 1 : choice = 0; 
                 }
+                
             }break;
             case 5:
             {
-                system("cls");
-                cout <<"ICIT Database for student record"<<endl;
-                cout <<"___________________________________"<<endl;
-                cout <<"____________Edit Record____________"<<endl;
-                cout<<"\nSearch for student!\nEnter roll no > ";
-                int rolln;
-                cin >> rolln;
-                bool status = SMS.checkstudent(rolln);
+                SMS.showHeader();
+                cout << "____________Edit Record____________" << endl;
+                cout<< "\nSearch for student!\nEnter roll no > ";
+                cin >> rollNumber;
+                bool status = SMS.check_Student(rollNumber);
                 if(status == false )
                 {
-                    cout <<"student with roll no. "<<rolln<<" NOT found!"<<endl;
-                    getch();
-                    top5:
-                    cout <<"1. Try another Roll no\n2. Add new Student\n0. Home"<<endl;
-                    int choice2;
+                    cout << "student with roll no. " << rollNumber<< " NOT found!" << endl;
+                    cout << "1. Try another Roll no\n2. Add new Student\n0. Home" << endl;
+                    
                     cin >> choice2;
                     if(choice2 == 1)
                     {
                         choice = 5;
-                    }else if(choice2 == 2)
-                    {
-                        choice = 1;
-                    }else if(choice2 == 0)
-                    {
-                        choice = 0;
                     }else
                     {
-                        cout<<"Error..! wrong input"<<endl;
-                        goto top5;
+                       (choice2 == 2)? choice = 1 : choice = 0; 
                     }
                 }else{
-                    SMS.showinfo(rolln);
-                    cout <<"Enter new credentials.."<<endl;
-                    cout <<"Enter NEW name: ";
-                    string name;
-                    string department;
-                    string batch;
-                    char section;
-                    int rollno;
+                    SMS.show_Student(rollNumber);
+                    cout << "Enter new credentials.." << endl;
+                    cout << "Enter NEW name: ";
+                    int new_rollnumber;
                     cin.ignore();
                     getline(cin, name);
-                    cout <<"Enter NEW department: ";
+                    cout << "Enter NEW department: ";
                     cin >> department;
-                    cout <<"Enter NEW roll no: ";
-                    cin >> rollno;
+                    cout << "Enter NEW roll no: ";
+                    cin >> new_rollnumber;
                     cout << "Enter NEW Session: ";
                     cin >> batch;
                     cout << "Enter NEW Setion: ";
-                    cin >> section;
-                    student tempobj(name, department, section, rollno, batch);
-                    SMS.Editinfo(rollno ,tempobj);
-                    cout <<"changes have been saved successfully"<<endl;
-                    getch();
-                    top6:
-                    cout <<"1. make another change\n0. Home"<<endl;
-                    int choice2;
+                    cin >> class_Section;
+                    student tempobj(name, department, class_Section, new_rollnumber, batch);
+                    SMS.Editinfo(rollNumber ,tempobj);
+                    cout << "changes have been saved successfully" << endl;
+                    cout << "1. make another change\n0. Home" << endl;
                     cin >> choice2;
-                    if(choice2 == 1)
-                    {
-                        choice = 5;
-                    }else if(choice2 == 0)
-                    {
-                        choice = 0;
-                    }else
-                    {
-                        cout<<"Error..! wrong input"<<endl;
-                        goto top6;
-                    }
-                }
-                
-                
+                    (choice2 == 1)? choice = 5 : choice = 0;
+                }                
 
             }break;
             case 6:
             {
-                system("cls");
-                cout <<"ICIT Database for student record"<<endl;
-                cout <<"___________________________________"<<endl;
-                cout <<"exiting..";
-                goto end:
+                SMS.showHeader();
+                cout << "exiting..";
+                return 0;
             }break;
             default:
             {
-                cout <<"wrong input.! Redirecting..."<<endl;
+                SMS.showHeader();
+                cout << "wrong input.! Redirecting..." << endl;
                 getch();
                 choice = 0;
             }
         }
     }
-    end: 
 
     return 0;
 }
