@@ -14,16 +14,16 @@ class Student{
     //setters
     void setname(std::string name )              { this-> name = name; }
     void setdepartment(std::string department )  { this-> name = department; }
-    void setroll(int roll )                 { this-> roll = roll; }
+    void setroll(int roll )                      { this-> roll = roll; }
     void setbatch(std::string batch )            { this-> batch = batch; }
-    void setsection(char class_Section)     { this-> class_Section = class_Section; }
+    void setsection(char class_Section)          { this-> class_Section = class_Section; }
 
     //getters
     std::string getname()            { return this->name; }
     std::string getdepartment()      { return this->department; }
-    int getroll()               { return this->roll; }
+    int getroll()                    { return this->roll; }
     std::string getbatch()           { return this->batch; }
-    char getsection()           { return this->class_Section; }
+    char getsection()                { return this->class_Section; }
 
     //creat Student data in a constructor
     Student(std::string name, std::string department, char class_Section, int roll, std::string batch)
