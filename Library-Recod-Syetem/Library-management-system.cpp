@@ -21,7 +21,7 @@ class Book{
     public:
     //setters
     void settitle(std::string title )       { this-> title = title;  }
-    void setauthor(std::string author )     { this-> title = author; }
+    void setauthor(std::string author )     { this-> author = author; }
     void setcopies(int copies )             { this-> copies = copies;}
     void setISBN(std::string ISBN )         { this-> ISBN = ISBN;    }
 
@@ -53,7 +53,7 @@ class Book{
         this-> phone_num = phone_number;
         this-> remarks = remarks;
     }
-
+    //recieve book
     Book(std::string name, std::string title, std::string date, std::string remarks)
     {
         this-> title = title;
@@ -79,16 +79,16 @@ class bookRecod{
     }
 
     //Recieve book
-    void recieveBook(std::string name, std::string title, std::string date, std::string remarks)
+    void recieveBook(std::string name, std::string title, std::string date, std::string phone_number, std::string remarks)
     {
         {
-            Book tempobj(name, title, date, remarks);
+            Book tempobj(name, title, date, phone_number , remarks);
             BookRecod.push_back(tempobj);
             return;
         }
     }
 
-    bool check(std::string Title)
+    bool choice(std::string Title)
     {
         if(BookRecod.empty())
         {
@@ -155,7 +155,7 @@ class BookManagementSystem{
             if(toLowerCase(it->gettitle())== toLowerCase(Title))
             {
                 Books.erase(it);
-                std::cout << "Book with Title no. " << Title<< " has been removed successfully." << std::endl;
+                std::cout << "The book '" << Title<< "' has been removed successfully." << std::endl;
                 return;
             }
         }
@@ -203,7 +203,7 @@ class BookManagementSystem{
         return;
     }
 
-    //check Book in database
+    //choice Book in database
     bool verify_Book(std::string Title)
     {   
         for(auto it = Books.begin(); it != Books.end(); it++)
@@ -229,8 +229,8 @@ class BookManagementSystem{
         return false;
     } 
     
-    //check availabilty
-    bool check(std::string Title)
+    //choice availabilty
+    bool choice(std::string Title)
     {
         if(Books.empty())
         {
@@ -265,7 +265,7 @@ class BookManagementSystem{
     //Home content
     void showHeader()
     {
-        std::cout << "ICIT Library Management System" << std::endl;
+        std::cout << "\nICIT Library Management System" << std::endl;
         std::cout << "___________________________________" << std::endl;
     }
 
@@ -301,14 +301,13 @@ int main()
     BookManagementSystem SMS;
     bookRecod NR;
     Book B1;
-    int choice = 0, choice2;
+    int state = 0, state2, copies, choice;
     std::string title, author, ISBN;
     std::string name, phone_no, date;
     
-    int copies;
     while(true)
     {    
-        switch(choice)
+        switch(state)
         {
             case 0:
             {
@@ -316,19 +315,28 @@ int main()
                 std::cout << "________________Home_______________" << std::endl;
                 std::cout << "\nChose an operation" << std::endl;
                 std::cout << "1. Add Book\n2. Remove Book\n3. Search\n4. Displayall\n5. Add new copies\n6. Issue book\n7. Recieve book\n8. View register\n9. Exit" << std::endl;
-                std::cout << "-->";
-                std::cin >> choice;
+                std::cout << "--> ";
+                choice = getch();
+                if(int(choice) > 57 |  int(choice) < 48)  //input validation 
+                { 
+                    std::cout<<"\n\nInvalid entry . Redirecting....";
+                    state = 0; 
+                }else
+                {
+                    state = int(choice) - 48 ;
+                }
+
             }break;
             case 1:
             {
-               SMS.showHeader();
+                SMS.showHeader();
                 std::cout << "______________Add Data_____________" << std::endl;
-                std::cout << "\nEnter Book full title: ";
                 std::cin.ignore();
+                std::cout << "\nEnter Book full title: ";
                 std::getline(std::cin, title);
                 std::cout << "Enter Book author: ";
                 std::getline(std::cin, author);
-                std::cout << "Enter Book copies No : ";
+                std::cout << "Enter Book number of copies: ";
                 std::cin >> copies;
                 std::cout << "Enter Book ISBN : ";
                 std::cin.ignore();
@@ -336,92 +344,87 @@ int main()
                 std::cout << "Verifying..."<<std::endl;
                 if(SMS.verify_Book(title, author, ISBN) == true)
                 {
-                    std::cout << "Book already exist.." <<std::endl;
+                    std::cout << "Book already exist.. add copies instead" <<std::endl;
                     SMS.show_Book(title);
-                    std::cout << "1. Add another \n0. Home\n-->" ;
-                    std::cin >> choice2;
-                    (choice2 == 1)? choice = 1 : choice = 0;
+                    std::cout << "1. Add another \n0. Home\n--> " ;
+                    std::cin >> state2;
+                    (state2 == 1)? state = 1 : state = 0;
                 }else{
                     std::cout << "Added successfully.."<<std::endl;
                     Book s1(title, author, ISBN, copies);
                     SMS.addBook(s1);
-                    std::cout << "1. Add another\n0. Home\n-->" ;
-                    std::cin >> choice2;
-                    (choice2 == 1)? choice = 1 : choice = 0;
+                    std::cout << "1. Add another\n0. Home\n--> " ;
+                    std::cin >> state2;
+                    (state2 == 1)? state = 1 : state = 0;
                 }
             }break;
             case 2:
-            {                
-                std::cout << "___________Remove Data__________" << std::endl;
-                std::cout << "\nEnter Number of copies > ";
+            {    
+                SMS.showHeader();   
+                std::cout << "____________Remove Book____________" << std::endl;
+                std::cout << "\nEnter Book name > ";
+                std::cin.ignore();
                 std::getline(std::cin,title);
-                SMS.removeBook(title);
-                getch();
-                std::cout << "1. Remove another\n0. Home\n-->" ;
-                std::cin >> choice2;
-                (choice2 == 1)? choice = 2 : choice = 0;
+                if(SMS.verify_Book(title) == false )
+                {
+                    std::cout << "The book  '" << title<< "' NOT found!" << std::endl;
+                    std::cout << "1. Remove another\n0. Home\n--> " ;
+                    std::cin >> state2;
+                    (state2 == 1)? state = 2 : state = 0;
+                }else{
+                    SMS.removeBook(title);
+                    std::cout << "1. Remove another\n0. Home\n--> " ;
+                    std::cin >> state2;
+                    (state2 == 1)? state = 2 : state = 0;
+                }  
 
             }break;
             case 3:
             {
                 SMS.showHeader();
-                std::cout << "_____________Search Book____________" << std::endl;
+                std::cout << "____________Search Book____________" << std::endl;
                 std::cout << "\nEnter Book Name > ";
                 std::cin.ignore();
                 std::getline(std::cin,title);
                 SMS.showHeader();
-                std::cout << "_______________Search______________" << std::endl;
                 if(SMS.verify_Book(title) == true)
                 {
                     std::cout << "Book found..."<<std::endl;
                     SMS.show_Book(title);
                 }else
                 {
-                    std::cout<<"Book with name '"<<title<<"' NOT found"<<std::endl;
+                    std::cout<<"The Book '"<<title<<"' NOT found!"<<std::endl;
                 }
                 
-                getch();
-                std::cout << "1. Search another\n0. Home\n-->" ;
-                std::cin >> choice2;
-                (choice2 == 1)? choice = 3 : choice = 0;
+                std::cout << "1. Search another\n0. Home\n--> " ;
+                std::cin >> state2;
+                (state2 == 1)? state = 3 : state = 0;
 
             }break;
             case 4:
             {
                 SMS.showHeader();
-                std::cout << "_____________View List_____________\n" << std::endl;
+                std::cout << "__________View All Books___________\n" << std::endl;
                 SMS.displayBooks();
-                getch();
-                std::cout << "1. Add Book\n9. Exit\n0. Home\n-->" ;
-                std::cin >> choice2;
-                if(choice2 == 9)
-                {
-                    choice = 6;
-                }else
-                {
-                   (choice2 == 1)? choice = 1 : choice = 0; 
-                }
-                
+                std::cout << "1. Add Book\n9. Exit\n0. Home\n--> " ;
+                std::cin >> state2;
+                (state2 == 9)? state = 9 : ((state2 == 1)? state = 1 : state = 0);
+
             }break;
             case 5:
             {
                 SMS.showHeader();
-                std::cout << "____________Add New copies____________" << std::endl;
+                std::cout << "___________Add New copies__________" << std::endl;
                 std::cout<< "\nSearch for Book!\nEnter book name > ";
                 std::cin.ignore();
                 std::getline(std::cin, title);
+
                 if(SMS.verify_Book(title) == false )
                 {
-                    std::cout << "Book with title no. " << title<< " NOT found!" << std::endl;
-                    std::cout << "1. Try another name\n2. Add new Book\n0. Home\n-->" ;
-                    std::cin >> choice2;
-                    if(choice2 == 1)
-                    {
-                        choice = 5;
-                    }else
-                    {
-                       (choice2 == 2)? choice = 1 : choice = 0; 
-                    }
+                    std::cout << "The book '" << title<< "' NOT found!" << std::endl;
+                    std::cout << "1. Try another name\n2. Add new Book\n0. Home\n--> " ;
+                    std::cin >> state2;
+                    (state2 == 1)? state = 5 : ((state2 == 2)? state = 1 : state = 0);
                 }else{
                     SMS.show_Book(title);
                     std::cout << "Enter NEW copies no: ";
@@ -429,9 +432,9 @@ int main()
                     std::cin >> new_copies;
                     SMS.addcopy(title ,new_copies);
                     std::cout << "Now book '"<<title<<"' has '"<<new_copies<<"' more copies." << std::endl;
-                    std::cout << "1. make another change\n0. Home\n-->" ;
-                    std::cin >> choice2;
-                    (choice2 == 1)? choice = 5 : choice = 0;
+                    std::cout << "1. make another change\n0. Home\n--> " ;
+                    std::cin >> state2;
+                    (state2 == 1)? state = 5 : state = 0;
                 }                
 
             }break;
@@ -439,22 +442,23 @@ int main()
             {
                 //issue book
                 SMS.showHeader();
-                std::cout << "____________Issue Book____________" << std::endl;
+                std::cout << "____________Issue Book_____________" << std::endl;
                 std::cout << "Enter book name: ";
                 std::cin.ignore();
                 std::getline(std::cin, title);
-                if(SMS.check(title) == true)
+
+                if(SMS.choice(title) == true)
                 {
                     std::cout << "This book is currently unavailable ."<<std::endl;
                     std::cout << "1. Issue another\n0. Home\n->";
-                    std::cin >> choice2;
-                    (choice2 == 1)? choice = 6 : choice = 0;
+                    std::cin >> state2;
+                    (state2 == 1)? state = 6 : state = 0;
                 }else{
                     std::cout << "Enter reciever's name: ";
                     std::cin.ignore();
                     std::getline(std::cin, name);
                     
-                    std::cout << "Enter issue date: ";
+                    std::cout << "Enter issue date(d-m-y): ";
                     std::getline(std::cin, date);
                     std::cout << "Enter Phone number: ";
                     std::getline(std::cin, phone_no);
@@ -462,27 +466,27 @@ int main()
                     NR.issueBook(name, title, date, phone_no, remarks);
                     SMS.issueBook(title);
                     std::cout << "Book '"<<title<<"' Issued to '"<<name<<"' "<<std::endl;
-                    std::cout << "1. Issue another \n0. Home\n-->" ;
-                    std::cin >> choice2;
-                    (choice2 == 1)? choice = 6 : choice = 0;
+                    std::cout << "1. Issue another \n0. Home\n--> " ;
+                    std::cin >> state2;
+                    (state2 == 1)? state = 6 : state = 0;
                 }
-
 
             }break;
             case 7:
             {
                 //Recieve book
                 SMS.showHeader();
-                std::cout << "____________Recieve Book____________" << std::endl;
+                std::cout << "____________Recieve Book___________" << std::endl;
                 std::cout << "Enter book name: ";
                 std::cin.ignore();
                 std::getline(std::cin, title);
-                if(NR.check(title) == true)
+
+                if(NR.choice(title) == true)
                 {
-                    std::cout<<"No book named '"<<title<<"' was issued"<<std::endl;
-                    std::cout << "1. Recieve another\n0. Home\n-->" ;
-                    std::cin >> choice2;
-                    (choice2 == 1)? choice = 7 : choice = 0;
+                    std::cout<<"No book named '"<<title<<"' has been issued"<<std::endl;
+                    std::cout << "1. Recieve another\n0. Home\n--> " ;
+                    std::cin >> state2;
+                    (state2 == 1)? state = 7 : state = 0;
                 }else
                 {
                     std::cout << "Enter reciever's name: ";
@@ -491,35 +495,41 @@ int main()
                     
                     std::cout << "Enter recive date: ";
                     std::getline(std::cin, date);
+                    std::cout << "Enter Handover's phone: ";
+                    std::getline(std::cin, phone_no);
                     std::string remarks = "Recieved";
-                    NR.recieveBook(name, title, date, remarks);
+                    NR.recieveBook(name, title, date, phone_no, remarks);
                     SMS.recieveBook(title);
                     std::cout << "Book '"<<title<<"' Recieved from '"<<name<<"' "<<std::endl;
-                    std::cout << "1. Recieve another\n0. Home\n-->" ;
-                    std::cin >> choice2;
-                    (choice2 == 1)? choice = 7 : choice = 0;
+                    std::cout << "1. Recieve another\n0. Home\n--> " ;
+                    std::cin >> state2;
+                    (state2 == 1)? state = 7 : state = 0;
                 }
+
             }break;
             case 8:
             {
                 SMS.showHeader();
+                std::cout << "___________Book Register___________" << std::endl;
                 NR.displayrecod();
-                std::cout << "1. Issue a book\n0. Home\n-->" ;
-                std::cin >> choice2;
-                (choice2 == 1)? choice = 6 : choice = 0;
+                std::cout << "1. Issue a book\n0. Home\n--> " ;
+                std::cin >> state2;
+                (state2 == 1)? state = 6 : state = 0;
+
             }break;
             case 9:
             {
                 SMS.showHeader();
                 std::cout << "exiting..";
                 return 0;
+
             }break;
             default:
             {
                 SMS.showHeader();
-                std::cout << "wrong choice.! Redirecting..." << std::endl;
+                std::cout << "wrong state.! Redirecting..." << std::endl;
                 getch();
-                choice = 0;
+                state = 0;
             }
         }
     }
