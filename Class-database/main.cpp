@@ -150,7 +150,6 @@ class StudentManagementSystem{
     void showHeader()
     {
         std::cout << "ICIT Database for Student record" << std::endl;
-        std::cout << "___________________________________" << std::endl;
     }
 };
 
