@@ -4,16 +4,20 @@
 #include <vector>
 #include <iomanip>
 #include <algorithm>
+#include <fstream>
+
 class Student{
     private:
     int roll;
-    std::string name, department, batch;
+    std::string name;
+    std::string department;
+    std::string batch;
     char class_Section;
 
     public:
     //setters
     void setname(std::string name )              { this-> name = name; }
-    void setdepartment(std::string department )  { this-> name = department; }
+    void setdepartment(std::string department )  { this-> department = department; }
     void setroll(int roll )                      { this-> roll = roll; }
     void setbatch(std::string batch )            { this-> batch = batch; }
     void setsection(char class_Section)          { this-> class_Section = class_Section; }
@@ -36,6 +40,49 @@ class Student{
     }
     //deafult constructor
     Student() {}
+    
+    void serialize(std::ofstream &outFile) const
+    {
+        size_t N_len = name.length();
+        size_t D_len = department.length();
+        size_t B_len = batch.length();
+        outFile.write(reinterpret_cast <const char*>(&roll), sizeof(roll)); 
+        outFile.write(reinterpret_cast <const char*>(&class_Section), sizeof(class_Section));
+        outFile.write(reinterpret_cast <const char*>(&N_len), sizeof(N_len)); 
+        outFile.write(reinterpret_cast <const char*>(&D_len), sizeof(D_len));
+        outFile.write(reinterpret_cast <const char*>(&B_len), sizeof(B_len));  
+        outFile.write(name.c_str(), N_len);  
+        outFile.write(department.c_str(), D_len); 
+        outFile.write(batch.c_str(), B_len);
+    }
+    
+    void Deserialize(std::ifstream &inFile)
+    {
+        if (inFile.eof())
+        {
+            std::cout<<"Nothing to read.."<<std::endl;
+            return;
+        }else
+        { 
+        
+            size_t N_len;
+            size_t D_len;
+            size_t B_len;
+            inFile.read(reinterpret_cast <char*>(&roll), sizeof(roll)); 
+            inFile.read(reinterpret_cast <char*>(&class_Section), sizeof(class_Section));
+            inFile.read(reinterpret_cast <char*>(&N_len), sizeof(N_len)); 
+            inFile.read(reinterpret_cast <char*>(&D_len), sizeof(D_len));
+            inFile.read(reinterpret_cast <char*>(&B_len), sizeof(B_len)); 
+            name.resize(N_len);    
+            department.resize(D_len); 
+            batch.resize(B_len);                              
+            inFile.read(&name[0], N_len);
+            inFile.read(&department[0], D_len);
+            inFile.read(&batch[0], B_len);
+        }
+    }
+
+    
 };
 class StudentManagementSystem{
     private:
@@ -43,120 +90,205 @@ class StudentManagementSystem{
     public:
 
     //add Student
-    void addStudent(Student& Student)
-    {    
-        Students.push_back(Student);
-    }
+    
 
     //remove Student
-    void removeStudent(int roll)
+    void removeStudent(int rollNumber, std::ifstream &inFile)
     {
-        for(auto it = Students.begin(); it != Students.end(); it++)
+
+        if(inFile.eof())
         {
-            if(it->getroll()== roll)
-            {
-                Students.erase(it);
-                std::cout << "Student with roll no. " << roll<< " has been removed successfully." << std::endl;
-                return;
+            
+        }else
+        {
+            while(inFile.peek() != EOF)
+            {  
+                Student S;
+                S.Deserialize(inFile);
+                Students.push_back(S);
+                
             }
+            for(auto it = Students.begin(); it != Students.end(); it++)
+            {
+                if(it->getroll()== rollNumber)
+                {   
+                    Students.erase(it);
+                    std::cout << "Student with roll no. " << rollNumber<< " has been removed successfully." << std::endl;
+
+                    std::ofstream outFile("student.bin", std::ios::binary | std::ios::trunc);
+                    for (const auto& s : Students) {
+                    s.serialize(outFile);
+                    }
+                    outFile.close();
+                    Students.clear();
+                    return;
+                    
+                }
+            }
+            
+            std::cout << "Student with roll no. " << rollNumber<< " NOT found!" << std::endl;
+
+            Students.clear();
+            return; 
+
         }
-        std::cout << "Student with roll no. " << roll<< " NOT found!" << std::endl;
-        return;
+        
     }
 
-    //display all Students in the system
-    void displayStudents()
-    {
-        if(Students.empty())
+    //read objects from binary
+
+    
+
+    void Show_all_Students(std::ifstream &inFile)
+    {   
+    
+        if (inFile.peek() == EOF)
         {
-            std::cout << "There is NO Student in the system." << std::endl;
+            std::cout<<"Nothing to read.."<< std::endl;
             return;
         }else
-        {  
-            int Sno = 1;  
-            for( auto temp : Students)
-            {
-                std::cout << "Std: " << Sno<<std::endl;
-                std::cout << "      Roll: " << temp.getroll()<<std::endl;
-                std::cout << "      Name: " << temp.getname()<<std::endl;
-                std::cout << "      Depart.: " << temp.getdepartment()<<std::endl;
-                std::cout << "      class_Section: " << temp.getsection()<<std::endl;
-                std::cout << "      Session: " << temp.getbatch()<<std::endl;
+        {
+            int Sno = 1;
+            while(inFile.peek() != EOF)
+            {  
+                Student S;
+                S.Deserialize(inFile);
+
+                std::cout << "S.No: " << Sno<< '\n' << std::endl;
+                std::cout << "      Roll:    " << S.getroll()<<std::endl;
+                std::cout << "      Name:    " << S.getname()<<std::endl;
+                std::cout << "      Depart.: " << S.getdepartment()<<std::endl;
+                std::cout << "      Section: " << S.getsection()<<std::endl;
+                std::cout << "      Session: " << S.getbatch()<<std::endl;
                 std::cout << "___________________________________" << std::endl;
                 Sno++;
+                
             }
         }
     }
 
     //Show Student details
-    void show_Student(int roll)
+    void show_Student(int roll, std::ifstream &inFile)
     {
-        for(auto it = Students.begin(); it != Students.end(); it++)
+        if(inFile.is_open() == false )
         {
-            if(it->getroll()== roll)
-            {
-                std::cout << "Roll: " << it->getroll()<<std::endl;
-                std::cout << "Name: " << it->getname()<<std::endl;
-                std::cout << "Depart.: " << it->getdepartment()<<std::endl;
-                std::cout << "class_Section: " << it->getsection()<<std::endl;
-                std::cout << "Batch: " << it->getbatch()<<std::endl;
-                std::cout << "___________________________________" << std::endl;
-                return;
+            std::cout << " error openning" << std::endl;
+            return;
+        }else
+        {
+            while(inFile.peek() != EOF)
+            {  
+                Student S;
+                S.Deserialize(inFile);
+                if(S.getroll() == roll)
+                {
+                    std::cout << "      Roll: " << S.getroll()<< std::endl;
+                    std::cout << "      Name: " << S.getname()<<std::endl;
+                    std::cout << "      Depart.: " << S.getdepartment()<<std::endl;
+                    std::cout << "      Section: " << S.getsection()<<std::endl;
+                    std::cout << "      Session: " << S.getbatch()<<std::endl;
+                    std::cout << "___________________________________" << std::endl;
+                }
+                
             }
         }
         return;
     }
 
     //check Student in database
-    bool verify_Student(int roll)
+    bool verify_Student(int roll, std::ifstream &inFile)
     {   
-        for(auto it = Students.begin(); it != Students.end(); it++)
-        {
-            if(it->getroll()== roll)
+        while(inFile.peek() != EOF)
+        {  
+            Student S;
+            S.Deserialize(inFile);
+            if(S.getroll() == roll)
             {
                 return true;
             }
+            
         }
         return false;
     } 
     
     //verify Student
-    bool verify_Student(int S_roll, std::string S_department, std::string S_batch, char S_class_Section)
+    bool verify_Student(int S_roll, std::string S_department, std::string S_batch, char S_class_Section, std::ifstream &inFile)
     {   
-        for(auto it = Students.begin(); it != Students.end(); it++)
-        {
-            if(it->getroll()== S_roll && it->getdepartment() == S_department && it->getbatch() == S_batch && it->getsection() == S_class_Section)
+        while(inFile.peek() != EOF)
+        {  
+            Student S;
+            S.Deserialize(inFile);
+            if(S.getroll() == S_roll)
             {
-                return true;
+            
+                if( S.getdepartment() == S_department && S.getbatch() == S_batch && S.getsection() == S_class_Section)
+                {
+                    return true;
+                }
             }
         }
+            
         return false;
     } 
     
     //replace old data
 
-    void Editinfo(int rollNumber, Student NewStudent)
+    void Editinfo(int rollNumber, Student NewStudent, std::ifstream &inFile)
     {
-        for(auto it = Students.begin(); it != Students.end(); it++)
+
+        if(inFile.eof())
         {
-            if(it->getroll()== rollNumber)
-            {   int index = distance(Students.begin(),it);
-                Students[index]=NewStudent;
+            std::cout<<"Empty.."<< std::endl;
+            return;
+        }else
+        {
+            while(inFile.peek() != EOF)
+            {  
+                Student S;
+                std::cout << "push" << std::endl;
+                S.Deserialize(inFile);
+                Students.push_back(S);
+                
             }
+            for(auto it = Students.begin(); it != Students.end(); it++)
+            {
+                std:: cout << "replace" << std::endl;
+                if(it->getroll()== rollNumber)
+                {   int index = distance(Students.begin(),it);
+                    Students[index ] = NewStudent;
+                    std::cout<<"i am working" << it->getname()<<std::endl;
+                    
+                }
+            }
+
+            std:: cout << "rewrite" << std::endl;
+            std::ofstream outFile("student.bin", std::ios::binary | std::ios::trunc);
+            for (const auto& s : Students) {
+                s.serialize(outFile);
+            }
+            outFile.close();
+            Students.clear();
+            return;
+
         }
     }
 
-    //Home content
-    void showHeader()
+    void Header()
     {
-        std::cout << "ICIT Database for Student record" << std::endl;
+        std::cout << "__________ ICIT RECORDS ___________"<<std::endl;
+
     }
 };
 
+
+
 int main()
 {
+    
+    
     StudentManagementSystem SMS;
-    int choice = 0, choice2;
+    Student Std;
+    char choice = '0', choice2;
     std::string name, department, batch;
     char class_Section;
     int rollNumber;
@@ -164,119 +296,162 @@ int main()
     {    
         switch(choice)
         {
-            case 0:
+            case '0':
             {
-               SMS.showHeader();
+               SMS.Header();
                 std::cout << "________________Home_______________" << std::endl;
                 std::cout << "\nChose an operation" << std::endl;
-                std::cout << "1. Add Student\n2. Remove Student\n3. Search\n4. Displayall\n5. Edit info\n6. Exit" << std::endl;
-                std::cin >> choice;
+                std::cout << "1. Add Student\n2. Remove Student\n3. Search\n4. Displayall\n5. Edit info\n6. Erase all\n7. Exit" << std::endl;
+                
+                std::cin >> choice ;
             }break;
-            case 1:
+            case '1':
             {
-               SMS.showHeader();
+               SMS.Header();
                 std::cout << "______________Add Data_____________" << std::endl;
-                std::cout << "\nEnter Student full name: ";
-                std::cin.ignore();
-                getline(std::cin, name);
-                std::cout << "Enter Student department: ";
-                std::cin >> department;
+                std::ifstream inFile;
+                inFile.open("student.bin", std::ios::binary);
+                if(inFile.is_open() == false)
+                {
+                    std::cout << "File not found.." << std::endl;
+                    choice = '6';
+                    break;
+                }
+                if(!inFile)
+                {
+                    std::ofstream outFile("student.bin", std::ios::binary | std::ios::trunc);
+                    outFile.close();
+                    std::cout << "Error opening file!" << std::endl;
+                    return 1;
+                }
+                
+                std::cout << "Enter Student details" << std::endl;
                 std::cout << "Enter Student Roll No : ";
                 std::cin >> rollNumber;
+                std::cin.ignore();
+                std::cout << "Enter Student full name: ";
+                getline(std::cin, name);
+                std::cout << "Enter Student department: ";
+                getline(std::cin, department);
+                
                 std::cout << "Enter Student Session (Y_From-To): ";
-                std::cin >> batch;
+                getline(std::cin,batch );
                 std::cout << "Enter Student class_Section (A,B,C): ";
                 std::cin >> class_Section;
                 std::cout << "Verifying..."<<std::endl;
-                if(SMS.verify_Student(rollNumber, department, batch, class_Section) == true)
+                
+                if(SMS.verify_Student(rollNumber, department, batch, class_Section, inFile) == true)
                 {
                     std::cout << "Student already exist.." <<std::endl;
-                    SMS.show_Student(rollNumber);
-                    std::cout << "1. Add another \n0. Home" << std::endl;
-                    std::cin >> choice2;
-                    (choice2 == 1)? choice = 1 : choice = 0;
+                    inFile.clear();
+                    inFile.seekg(0, std::ios::beg);
+                    SMS.show_Student(rollNumber,inFile);
+                    std::cout << "1. Add another \n2. Edit info\n0. Home" << std::endl;
+                    choice2 = getchar();
+                    (choice2 == '1')? choice = '1' : (choice2 == '2')? choice = '2' : choice = '0';
                 }else{
                     std::cout << "Added successfully.."<<std::endl;
                     Student s1(name, department, class_Section, rollNumber, batch);
-                    SMS.addStudent(s1);
+                    std::ofstream outFile("student.bin", std::ios::binary | std::ios::app); 
+                    s1.serialize(outFile);
                     std::cout << "1. Add another\n0. Home" << std::endl;
-                    std::cin >> choice2;
-                    (choice2 == 1)? choice = 1 : choice = 0;
+                    choice2 = getchar();
+                    (choice2 == '1')? choice = '1' : choice = '0';
                 }
+                inFile.close();
             }break;
-            case 2:
+            case '2':
             {                
                 std::cout << "___________Remove Data__________" << std::endl;
                 std::cout << "\nEnter roll number > ";
+                std::cin.ignore();
                 std::cin >> rollNumber;
-                SMS.removeStudent(rollNumber);
-                getch();
+                std::ifstream inFile("student.bin", std::ios::binary ); 
+                SMS.removeStudent(rollNumber, inFile);
+                
                 std::cout << "1. Remove another\n0. Home" << std::endl;
                 std::cin >> choice2;
-                (choice2 == 1)? choice = 2 : choice = 0;
+                (choice2 == '1')? choice = '2' : choice = '0';
+
+                inFile.close();
 
             }break;
-            case 3:
+            case '3':
             {
-                SMS.showHeader();
+                SMS.Header();
                 std::cout << "_______________Search______________" << std::endl;
+                std::cin.clear();
+                std::ifstream inFile;
+                inFile.open("student.bin", std::ios::binary );
+                if(inFile.peek() == EOF)
+                {
+                    std::cout << "File is empty!" << std::endl;
+                    std::cout << "1. Add Student\n0. Home" << std::endl;
+                    std::cin >> choice2 ;  
+                    inFile.close();  
+                    (choice2 == '1')? choice = '1' : choice = '0';
+                    break;
+                }
                 std::cout << "\nEnter roll number > ";
                 std::cin >> rollNumber;
-                SMS.showHeader();
-                std::cout << "_______________Search______________" << std::endl;
-                if(SMS.verify_Student(rollNumber) == true)
+                std::cout << "Verifying..."<<std::endl;
+                if(SMS.verify_Student(rollNumber, inFile) == true)
                 {
                     std::cout << "Student found..."<<std::endl;
-                    SMS.show_Student(rollNumber);
+                    inFile.clear();
+                    inFile.seekg(0, std::ios::beg);
+                    SMS.show_Student(rollNumber, inFile);
                 }else
                 {
                     std::cout<<"Student with roll number '"<<rollNumber<<"' NOT found"<<std::endl;
                 }
                 
-                getch();
                 std::cout << "1. Search another\n0. Home" << std::endl;
+                
                 std::cin >> choice2;
-                (choice2 == 1)? choice = 3 : choice = 0;
+                (choice2 == '1')? choice = '3' : choice = '0';
+                inFile.close();
 
             }break;
-            case 4:
+            case '4':
             {
-                SMS.showHeader();
+                SMS.Header();
                 std::cout << "_____________View List_____________\n" << std::endl;
-                SMS.displayStudents();
-                getch();
-                std::cout << "1. Add Student\n9. Exit\n0. Home" << std::endl;
+                std::ifstream inFile;
+                inFile.open("student.bin", std::ios::binary ); 
+                SMS.Show_all_Students(inFile);
+                std::cout << "1. Add Student\n0. Home" << std::endl;
                 std::cin >> choice2;
-                if(choice2 == 9)
-                {
-                    choice = 6;
-                }else
-                {
-                   (choice2 == 1)? choice = 1 : choice = 0; 
-                }
+                (choice2 == '1')? choice = '1' : choice = '0'; 
+
+                inFile.close();
+                
                 
             }break;
-            case 5:
+            case '5':
             {
-                SMS.showHeader();
-                std::cout << "____________Edit Record____________" << std::endl;
-                std::cout<< "\nSearch for Student!\nEnter roll no > ";
+                SMS.Header();
+                std::ifstream inFile;
+                std::cout << "_____________Edit Data_____________\n" << std::endl;
+                std::cout << "Enter roll number > ";
                 std::cin >> rollNumber;
-                bool status = SMS.verify_Student(rollNumber);
+                std::cout << "Verifying..."<<std::endl;
+                inFile.open("student.bin", std::ios::binary ); 
+                bool status = SMS.verify_Student(rollNumber, inFile);
+                inFile.close();
                 if(status == false )
                 {
                     std::cout << "Student with roll no. " << rollNumber<< " NOT found!" << std::endl;
                     std::cout << "1. Try another Roll no\n2. Add new Student\n0. Home" << std::endl;
                     std::cin >> choice2;
-                    if(choice2 == 1)
-                    {
-                        choice = 5;
-                    }else
-                    {
-                       (choice2 == 2)? choice = 1 : choice = 0; 
-                    }
+                    (choice2 == '1')? choice = '5' : (choice2 == '2')? choice = '1' : choice = '0'; 
+                   
                 }else{
-                    SMS.show_Student(rollNumber);
+
+                    std::ifstream inFile2;
+                    inFile2.open("student.bin", std::ios::binary ); 
+                    SMS.show_Student(rollNumber, inFile2);
+                    inFile2.close();
                     std::cout << "Enter new credentials.." << std::endl;
                     std::cout << "Enter NEW name: ";
                     int new_rollnumber;
@@ -290,27 +465,39 @@ int main()
                     std::cin >> batch;
                     std::cout << "Enter NEW Setion: ";
                     std::cin >> class_Section;
-                    Student tempobj(name, department, class_Section, new_rollnumber, batch);
-                    SMS.Editinfo(rollNumber ,tempobj);
+                    Student S(name, department, class_Section, new_rollnumber, batch);
+                    std::ifstream inFile3("student.bin", std::ios::binary);
+                    SMS.Editinfo(rollNumber, S , inFile3);
+                    inFile3.close();
                     std::cout << "changes have been saved successfully" << std::endl;
                     std::cout << "1. make another change\n0. Home" << std::endl;
                     std::cin >> choice2;
-                    (choice2 == 1)? choice = 5 : choice = 0;
-                }                
+                    (choice2 == '1')? choice = '5' : choice = '0';
+
+                }             
+                
+                
 
             }break;
-            case 6:
+            case '6':
             {
-                SMS.showHeader();
+
+                std::ofstream newfile("student.bin", std::ios::binary | std::ios::trunc);
+                std::cout << "new file generated";
+                return 0;
+                
+            }break;
+            case '7':
+            {
+                
                 std::cout << "exiting..";
                 return 0;
+
             }break;
             default:
             {
-                SMS.showHeader();
-                std::cout << "wrong input.! Redirecting..." << std::endl;
-                getch();
-                choice = 0;
+                
+                choice = '0';
             }
         }
     }
