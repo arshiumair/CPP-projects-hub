@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <fstream>
+#include <iomanip>
 
 class Student{
     private:
@@ -291,7 +292,7 @@ class StudentManagementSystem{
     {
         std::cout << "________________Home_______________" << std::endl;
         std::cout << "\nChose an operation" << std::endl;
-        std::cout << "1. Add Student\n2. Remove Student\n3. Search\n4. Display all\n5. Edit info\n6. Erase all\n7. Exit" << std::endl;
+        std::cout << "1. Add Student\n2. Remove Student\n3. Search\n4. Display all\n5. Edit info\n6. Erase all\n7. Export data\n8. Exit" << std::endl;
         return;
     }
 
@@ -334,6 +335,29 @@ class StudentManagementSystem{
         return false;
 
     }
+
+    void exportdata(std::ofstream &outFile, std::ifstream &inFile )
+    {
+        Student s;
+        outFile <<"Roll No." << '\t';
+        outFile <<"Name" << '\t';
+        outFile <<"Department" << '\t';
+        outFile <<"Section" << '\t';
+        outFile <<"Batch" << '\n';
+        while(inFile.peek() != EOF)
+        {
+            s.Deserialize(inFile);
+
+            outFile << s.getroll() << '\t';
+            outFile << s.getname() << '\t';
+            outFile << s.getdepartment() << '\t';
+            outFile << s.getsection() << '\t';
+            outFile << s.getbatch() << '\n';
+        }
+        return;
+    }
+
+    
 };
 
 
@@ -521,7 +545,7 @@ int main()
             }break;
             case '6':
             {
-
+                SMS.Header();
                 std::ofstream newfile("student.bin", std::ios::binary | std::ios::trunc);
                 std::cout << "Clean file";
                 return 0;
@@ -529,8 +553,25 @@ int main()
             }break;
             case '7':
             {
+                SMS.Header();
+                std::cout << "Exporting Student data in .txt file... " <<std::endl;
+                std::ofstream outFile;
+                outFile.open("student_record.txt");
+                std::ifstream inFile4;
+                inFile4.open("student.bin", std::ios::binary);
+                SMS.exportdata(outFile,inFile4);
+                outFile.close();
+                inFile4.close();
+                std::cout << "Export successful" << std::endl;
+                std::cout << "1. Home\n0. Exit" << std::endl;
+                std::cin >> choice2;
+                (choice2 == '1')? choice = '0' : choice = '8';
+
+            }break;
+            case '8':
+            {
                 
-                std::cout << "exiting..";
+                std::cout << "exiting...";
                 return 0;
 
             }break;
