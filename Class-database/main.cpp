@@ -339,20 +339,23 @@ class StudentManagementSystem{
     void exportdata(std::ofstream &outFile, std::ifstream &inFile )
     {
         Student s;
-        outFile <<"Roll No." << '\t';
+        outFile <<"Roll No." << std::setw(12);
         outFile <<"Name" << '\t';
-        outFile <<"Department" << '\t';
-        outFile <<"Section" << '\t';
-        outFile <<"Batch" << '\n';
+        outFile <<"Department" << std::setw(9);
+        outFile <<"Batch" << std::setw(14);
+        outFile <<"Section" << '\n';
+        outFile <<"_________________________________________________________" << '\n';
+        
         while(inFile.peek() != EOF)
         {
             s.Deserialize(inFile);
 
-            outFile << s.getroll() << '\t';
-            outFile << s.getname() << '\t';
-            outFile << s.getdepartment() << '\t';
-            outFile << s.getsection() << '\t';
-            outFile << s.getbatch() << '\n';
+            outFile << s.getroll() << std::setw(20);
+            outFile << s.getname() << std::setw(10);
+            outFile << s.getdepartment() << std::setw(12);
+            outFile << s.getbatch() << std::setw(8);
+            outFile << s.getsection() << '\n';
+            
         }
         return;
     }
