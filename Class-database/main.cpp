@@ -79,12 +79,12 @@ class Student{
             inFile.read(&batch[0], B_len);
         }
     }
-
     
 };
-void to_upper(char &char_in)
+
+void to_upper_case(char &char_in)
 {
-    if(char_in > 'C')
+    if(char_in > 'Z')
     {
         char_in = int(char_in) - 32;
     }
@@ -323,8 +323,8 @@ class StudentManagementSystem{
         getline(std::cin,batch );
         std::cout << "Enter Student class_Section (A,B,C): ";
         std::cin >> class_Section;
-        to_upper(class_Section);
-        if(std::cin.fail() || class_Section > 'C' || class_Section < 'A' )
+        to_upper_case(class_Section);
+        if(std::cin.fail() || class_Section > 'Z' || class_Section < 'A')
         {
             flag();
             std::cin.clear();
