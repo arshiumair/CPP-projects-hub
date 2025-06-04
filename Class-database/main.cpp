@@ -336,8 +336,13 @@ class StudentManagementSystem{
 
     }
 
-    void exportdata(std::ofstream &outFile, std::ifstream &inFile )
+    bool exportdata(std::ofstream &outFile, std::ifstream &inFile )
     {
+        if(inFile.peek() != EOF)
+        {
+            std::cout << "Nothing to export" << std :: endl;
+            return true;
+        }
         Student s;
         outFile <<"Roll No." << std::setw(12);
         outFile <<"Name" << '\t';
@@ -357,7 +362,7 @@ class StudentManagementSystem{
             outFile << s.getsection() << '\n';
             
         }
-        return;
+        return false;
     }
 
     
@@ -562,10 +567,16 @@ int main()
                 outFile.open("student_record.txt");
                 std::ifstream inFile4;
                 inFile4.open("student.bin", std::ios::binary);
-                SMS.exportdata(outFile,inFile4);
+                bool state = SMS.exportdata(outFile,inFile4);
+                if(state = false)
+                {
+                    std::cout << "Export successful" << std::endl;
+                }else
+                {
+                    std::cout << "Export failed.." << std::endl;
+                }
                 outFile.close();
                 inFile4.close();
-                std::cout << "Export successful" << std::endl;
                 std::cout << "1. Home\n0. Exit" << std::endl;
                 std::cin >> choice2;
                 (choice2 == '1')? choice = '0' : choice = '8';
