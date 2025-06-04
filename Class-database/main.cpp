@@ -338,7 +338,7 @@ class StudentManagementSystem{
 
     bool exportdata(std::ofstream &outFile, std::ifstream &inFile )
     {
-        if(inFile.peek() != EOF)
+        if(inFile.peek() == EOF)
         {
             std::cout << "Nothing to export" << std :: endl;
             return true;
@@ -567,8 +567,9 @@ int main()
                 outFile.open("student_record.txt");
                 std::ifstream inFile4;
                 inFile4.open("student.bin", std::ios::binary);
-                bool state = SMS.exportdata(outFile,inFile4);
-                if(state = false)
+                inFile4.seekg(0, std::ios::beg);
+                bool state1 = SMS.exportdata(outFile,inFile4);
+                if(state1 == false)
                 {
                     std::cout << "Export successful" << std::endl;
                 }else
