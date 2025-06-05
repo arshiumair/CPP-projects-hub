@@ -152,7 +152,7 @@ class StudentManagementSystem{
 
     
 
-    void Show_all_Students(std::ifstream &inFile)
+    void Show_all_Students(std::ifstream &inFile, std::string dep, std::string bat, char sec)
     {   
     
         if (inFile.peek() == EOF)
@@ -166,18 +166,25 @@ class StudentManagementSystem{
             {  
                 Student S;
                 S.Deserialize(inFile);
-
-                std::cout << "S.No: " << Sno<< '\n' << std::endl;
-                std::cout << "      Roll:    " << S.getroll()<<std::endl;
-                std::cout << "      Name:    " << S.getname()<<std::endl;
-                std::cout << "      Depart.: " << S.getdepartment()<<std::endl;
-                std::cout << "      Section: " << S.getsection()<<std::endl;
-                std::cout << "      Session: " << S.getbatch()<<std::endl;
-                std::cout << "___________________________________" << std::endl;
-                Sno++;
+                if(S.getdepartment() == dep && S.getbatch() == bat && S.getsection() == sec)
+                {
+                    std::cout << "S.No: " << Sno<< '\n' << std::endl;
+                    std::cout << "      Roll:    " << S.getroll()<<std::endl;
+                    std::cout << "      Name:    " << S.getname()<<std::endl;
+                    std::cout << "      Depart.: " << S.getdepartment()<<std::endl;
+                    std::cout << "      Section: " << S.getsection()<<std::endl;
+                    std::cout << "      Session: " << S.getbatch()<<std::endl;
+                    std::cout << "___________________________________" << std::endl;
+                    Sno++;
+                }
                 
             }
+            if(Sno == 1)
+            {
+                std::cout << "Nothing to show.."<< std::endl;
+            }
         }
+        return;
     }
 
     //Show Student details
@@ -499,9 +506,25 @@ int main()
             {
                 SMS.Header();
                 std::cout << "_____________View List_____________\n" << std::endl;
+                std::cout << "Enter Student department: ";
+                std::cin.ignore();
+                getline(std::cin, department);
+                str_to_upper(department);
+                std::cout << "Enter Student Session (Y_From-To): ";
+                getline(std::cin,batch );
+                std::cout << "Enter Student class_Section (A,B,C): ";
+                std::cin >> class_Section;
+                char_to_upper(class_Section);
+                if(std::cin.fail() || class_Section > 'Z' || class_Section < 'A')
+                {
+                    SMS.flag();
+                    std::cin.clear();
+                    std::cin.ignore();
+                    choice = '4';
+                }
                 std::ifstream inFile;
                 inFile.open("student.bin", std::ios::binary ); 
-                SMS.Show_all_Students(inFile);
+                SMS.Show_all_Students(inFile, department, batch, class_Section);
                 std::cout << "1. Add Student\n0. Home" << std::endl;
                 std::cin >> choice2;
                 (choice2 == '1')? choice = '1' : choice = '0'; 
