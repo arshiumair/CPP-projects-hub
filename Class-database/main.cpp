@@ -511,8 +511,8 @@ int main()
                     std::cout << "1. Add Student\n0. Home" << std::endl;
                     std::cin >> choice2;
                     (choice2 == '1')? choice = '1' : choice = '0';
-                    
-                }break;
+                    break;
+                }
 
                 std::cout << "Enter Student program: ";
                 std::cin.ignore();
@@ -597,8 +597,8 @@ int main()
             {
                 SMS.Header();
                 std::ofstream newfile("student.bin", std::ios::binary | std::ios::trunc);
-                std::cout << "Clean file";
-                return 0;
+                std::cout << "Clean file" << std::endl;
+                choice = '0';
                 
             }break;
             case '7':
