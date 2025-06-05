@@ -8,30 +8,30 @@ class Student{
     private:
     int roll;
     std::string name;
-    std::string department;
+    std::string program;
     std::string batch;
     char class_Section;
 
     public:
     //setters
     void setname(std::string name )              { this-> name = name; }
-    void setdepartment(std::string department )  { this-> department = department; }
+    void setprogram(std::string program )  { this-> program = program; }
     void setroll(int roll )                      { this-> roll = roll; }
     void setbatch(std::string batch )            { this-> batch = batch; }
     void setsection(char class_Section)          { this-> class_Section = class_Section; }
 
     //getters
     std::string getname()            { return this->name; }
-    std::string getdepartment()      { return this->department; }
+    std::string getprogram()      { return this->program; }
     int getroll()                    { return this->roll; }
     std::string getbatch()           { return this->batch; }
     char getsection()                { return this->class_Section; }
 
     //Student data in a constructor
-    Student(std::string name, std::string department, char class_Section, int roll, std::string batch)
+    Student(std::string name, std::string program, char class_Section, int roll, std::string batch)
     {
         this-> name = name;
-        this-> department = department;
+        this-> program = program;
         this-> roll = roll;
         this-> batch = batch;
         this-> class_Section = class_Section;
@@ -42,7 +42,7 @@ class Student{
     void serialize(std::ofstream &outFile) const
     {
         size_t N_len = name.length();
-        size_t D_len = department.length();
+        size_t D_len = program.length();
         size_t B_len = batch.length();
         outFile.write(reinterpret_cast <const char*>(&roll), sizeof(roll)); 
         outFile.write(reinterpret_cast <const char*>(&class_Section), sizeof(class_Section));
@@ -50,7 +50,7 @@ class Student{
         outFile.write(reinterpret_cast <const char*>(&D_len), sizeof(D_len));
         outFile.write(reinterpret_cast <const char*>(&B_len), sizeof(B_len));  
         outFile.write(name.c_str(), N_len);  
-        outFile.write(department.c_str(), D_len); 
+        outFile.write(program.c_str(), D_len); 
         outFile.write(batch.c_str(), B_len);
     }
     
@@ -72,10 +72,10 @@ class Student{
             inFile.read(reinterpret_cast <char*>(&D_len), sizeof(D_len));
             inFile.read(reinterpret_cast <char*>(&B_len), sizeof(B_len)); 
             name.resize(N_len);    
-            department.resize(D_len); 
+            program.resize(D_len); 
             batch.resize(B_len);                              
             inFile.read(&name[0], N_len);
-            inFile.read(&department[0], D_len);
+            inFile.read(&program[0], D_len);
             inFile.read(&batch[0], B_len);
         }
     }
@@ -155,36 +155,31 @@ class StudentManagementSystem{
     void Show_all_Students(std::ifstream &inFile, std::string dep, std::string bat, char sec)
     {   
     
-        if (inFile.peek() == EOF)
-        {
-            std::cout<<"Nothing to read.."<< std::endl;
-            return;
-        }else
-        {
-            int Sno = 1;
-            std::cout << "Displaying students of " << dep << " batch " << bat << " section: " << std::endl;
-            while(inFile.peek() != EOF)
-            {  
-                Student S;
-                S.Deserialize(inFile);
-                if(S.getdepartment() == dep && S.getbatch() == bat && S.getsection() == sec)
-                {
-                    std::cout << "S.No: " << Sno<< '\n' << std::endl;
-                    std::cout << "      Roll:    " << S.getroll()<<std::endl;
-                    std::cout << "      Name:    " << S.getname()<<std::endl;
-                    std::cout << "      Depart.: " << S.getdepartment()<<std::endl;
-                    std::cout << "      Section: " << S.getsection()<<std::endl;
-                    std::cout << "      Session: " << S.getbatch()<<std::endl;
-                    std::cout << "___________________________________" << std::endl;
-                    Sno++;
-                }
-                
-            }
-            if(Sno == 1)
+    
+        int Sno = 1;
+        std::cout << "Displaying students of " << dep << " batch " << bat << " section: " << sec << std::endl;
+        while(inFile.peek() != EOF)
+        {  
+            Student S;
+            S.Deserialize(inFile);
+            if(S.getprogram() == dep && S.getbatch() == bat && S.getsection() == sec)
             {
-                std::cout << "Nothing to show.."<< std::endl;
+                std::cout << "S.No: " << Sno<< '\n' << std::endl;
+                std::cout << "      Roll:    " << S.getroll()<<std::endl;
+                std::cout << "      Name:    " << S.getname()<<std::endl;
+                std::cout << "      Depart.: " << S.getprogram()<<std::endl;
+                std::cout << "      Section: " << S.getsection()<<std::endl;
+                std::cout << "      Session: " << S.getbatch()<<std::endl;
+                std::cout << "___________________________________" << std::endl;
+                Sno++;
             }
+            
         }
+        if(Sno == 1)
+        {
+            std::cout << "Nothing to show.."<< std::endl;
+        }
+        
         return;
     }
 
@@ -205,7 +200,7 @@ class StudentManagementSystem{
                 {
                     std::cout << "      Roll: " << S.getroll()<< std::endl;
                     std::cout << "      Name: " << S.getname()<<std::endl;
-                    std::cout << "      Depart.: " << S.getdepartment()<<std::endl;
+                    std::cout << "      Depart.: " << S.getprogram()<<std::endl;
                     std::cout << "      Section: " << S.getsection()<<std::endl;
                     std::cout << "      Session: " << S.getbatch()<<std::endl;
                     std::cout << "___________________________________" << std::endl;
@@ -233,7 +228,7 @@ class StudentManagementSystem{
     } 
     
     //verify Student
-    bool verify_Student(int S_roll, std::string S_department, std::string S_batch, char S_class_Section, std::ifstream &inFile)
+    bool verify_Student(int S_roll, std::string S_program, std::string S_batch, char S_class_Section, std::ifstream &inFile)
     {   
         while(inFile.peek() != EOF)
         {  
@@ -242,7 +237,7 @@ class StudentManagementSystem{
             if(S.getroll() == S_roll)
             {
             
-                if( S.getdepartment() == S_department && S.getbatch() == S_batch && S.getsection() == S_class_Section)
+                if( S.getprogram() == S_program && S.getbatch() == S_batch && S.getsection() == S_class_Section)
                 {
                     return true;
                 }
@@ -321,7 +316,7 @@ class StudentManagementSystem{
         return;
     }
 
-    bool input_d(std::string &name, std::string &department, std::string &batch, char &class_Section, int &rollNumber)
+    bool input_d(std::string &name, std::string &program, std::string &batch, char &class_Section, int &rollNumber)
     {
         std::cout << "Enter Student Roll No : ";
         std::cin >> rollNumber;
@@ -335,9 +330,9 @@ class StudentManagementSystem{
         std::cin.ignore();
         std::cout << "Enter Student full name: ";
         getline(std::cin, name);
-        std::cout << "Enter Student department: ";
-        getline(std::cin, department);
-        str_to_upper(department);
+        std::cout << "Enter Student program: ";
+        getline(std::cin, program);
+        str_to_upper(program);
         
         std::cout << "Enter Student Session (Y_From-To): ";
         getline(std::cin,batch );
@@ -366,7 +361,7 @@ class StudentManagementSystem{
         Student s;
         outFile <<"Roll No." << std::setw(12);
         outFile <<"Name" << std::setw(18);
-        outFile <<"Department" << std::setw(9);
+        outFile <<"Program" << std::setw(9);
         outFile <<"Batch" << std::setw(14);
         outFile <<"Section" << '\n';
         outFile <<"_____________________________________________________________" << '\n';
@@ -377,7 +372,7 @@ class StudentManagementSystem{
 
             outFile << s.getroll() << std::setw(20);
             outFile << s.getname() << std::setw(10);
-            outFile << s.getdepartment() << std::setw(12);
+            outFile << s.getprogram() << std::setw(12);
             outFile << s.getbatch() << std::setw(10);
             outFile << s.getsection() << '\n';
             
@@ -397,7 +392,7 @@ int main()
     
     StudentManagementSystem SMS;
     char choice = '0', choice2;
-    std::string name, department, batch;
+    std::string name, program, batch;
     char class_Section;
     int rollNumber;
     while(true)
@@ -423,13 +418,13 @@ int main()
                     break;
                 }
 
-                bool In = SMS.input_d(name, department, batch, class_Section, rollNumber);
+                bool In = SMS.input_d(name, program, batch, class_Section, rollNumber);
                 if( In == true )
                 {
                     continue;
                 }
                 SMS.open_c(inFile);  
-                if(SMS.verify_Student(rollNumber, department, batch, class_Section, inFile) == true)
+                if(SMS.verify_Student(rollNumber, program, batch, class_Section, inFile) == true)
                 {
                     std::cout << "Student already exist.." <<std::endl;
                     inFile.clear();
@@ -441,7 +436,7 @@ int main()
                 }else{
                     std::cout << "Added successfully.."<<std::endl;
 
-                    Student s1(name, department, class_Section, rollNumber, batch);
+                    Student s1(name, program, class_Section, rollNumber, batch);
                     std::ofstream outFile("student.bin", std::ios::binary | std::ios::app); 
                     s1.serialize(outFile);
                     std::cout << "1. Add another\n0. Home" << std::endl;
@@ -507,10 +502,22 @@ int main()
             {
                 SMS.Header();
                 std::cout << "_____________View List_____________\n" << std::endl;
-                std::cout << "Enter Student department: ";
+                std::ifstream inFile;
+                inFile.open("student.bin", std::ios::binary ); 
+                if (inFile.peek() == EOF)
+                {
+                    std::cout<<"Nothing to read.."<< std::endl;
+                    inFile.close();
+                    std::cout << "1. Add Student\n0. Home" << std::endl;
+                    std::cin >> choice2;
+                    (choice2 == '1')? choice = '1' : choice = '0';
+                    
+                }break;
+
+                std::cout << "Enter Student program: ";
                 std::cin.ignore();
-                getline(std::cin, department);
-                str_to_upper(department);
+                getline(std::cin, program);
+                str_to_upper(program);
                 std::cout << "Enter Student Session (Y_From-To): ";
                 getline(std::cin,batch );
                 std::cout << "Enter Student class_Section (A,B,C): ";
@@ -523,9 +530,8 @@ int main()
                     std::cin.ignore();
                     choice = '4';
                 }
-                std::ifstream inFile;
-                inFile.open("student.bin", std::ios::binary ); 
-                SMS.Show_all_Students(inFile, department, batch, class_Section);
+                
+                SMS.Show_all_Students(inFile, program, batch, class_Section);
                 std::cout << "1. Add Student\n0. Home" << std::endl;
                 std::cin >> choice2;
                 (choice2 == '1')? choice = '1' : choice = '0'; 
@@ -568,12 +574,12 @@ int main()
                     int new_rollnumber;
                     std::cout << "Enter new credentials.." << std::endl;
 
-                    bool In = SMS.input_d(name, department, batch, class_Section, new_rollnumber);
+                    bool In = SMS.input_d(name, program, batch, class_Section, new_rollnumber);
                     if( In == true )
                 {
                     continue;
                 }
-                    Student S(name, department, class_Section, new_rollnumber, batch);
+                    Student S(name, program, class_Section, new_rollnumber, batch);
                     std::ifstream inFile3("student.bin", std::ios::binary);
                     SMS.Editinfo(rollNumber, S , inFile3);
                     inFile3.close();
