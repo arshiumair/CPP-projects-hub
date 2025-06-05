@@ -1,5 +1,5 @@
 # About project
 This project is about storage, organization and management of student records.<br>
-Currently it rely only on RAM, and we are making progress to make it able to store data as .txt file and then retrieve it, as needed.<br>
+It;s capable of storing user in a binary file. Moreover you can also creat and retrieve a backeup txt file<br>
 Regards:<br>
 Author..
