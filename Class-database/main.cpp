@@ -15,14 +15,14 @@ class Student{
     public:
     //setters
     void setname(std::string name )              { this-> name = name; }
-    void setprogram(std::string program )  { this-> program = program; }
+    void setprogram(std::string program )        { this-> program = program; }
     void setroll(int roll )                      { this-> roll = roll; }
     void setbatch(std::string batch )            { this-> batch = batch; }
     void setsection(char class_Section)          { this-> class_Section = class_Section; }
 
     //getters
     std::string getname()            { return this->name; }
-    std::string getprogram()      { return this->program; }
+    std::string getprogram()         { return this->program; }
     int getroll()                    { return this->roll; }
     std::string getbatch()           { return this->batch; }
     char getsection()                { return this->class_Section; }
@@ -42,15 +42,15 @@ class Student{
     void serialize(std::ofstream &outFile) const
     {
         size_t N_len = name.length();
-        size_t D_len = program.length();
+        size_t P_len = program.length();
         size_t B_len = batch.length();
         outFile.write(reinterpret_cast <const char*>(&roll), sizeof(roll)); 
         outFile.write(reinterpret_cast <const char*>(&class_Section), sizeof(class_Section));
         outFile.write(reinterpret_cast <const char*>(&N_len), sizeof(N_len)); 
-        outFile.write(reinterpret_cast <const char*>(&D_len), sizeof(D_len));
+        outFile.write(reinterpret_cast <const char*>(&P_len), sizeof(P_len));
         outFile.write(reinterpret_cast <const char*>(&B_len), sizeof(B_len));  
         outFile.write(name.c_str(), N_len);  
-        outFile.write(program.c_str(), D_len); 
+        outFile.write(program.c_str(), P_len); 
         outFile.write(batch.c_str(), B_len);
     }
     
@@ -64,18 +64,18 @@ class Student{
         { 
         
             size_t N_len;
-            size_t D_len;
+            size_t P_len;
             size_t B_len;
             inFile.read(reinterpret_cast <char*>(&roll), sizeof(roll)); 
             inFile.read(reinterpret_cast <char*>(&class_Section), sizeof(class_Section));
             inFile.read(reinterpret_cast <char*>(&N_len), sizeof(N_len)); 
-            inFile.read(reinterpret_cast <char*>(&D_len), sizeof(D_len));
+            inFile.read(reinterpret_cast <char*>(&P_len), sizeof(P_len));
             inFile.read(reinterpret_cast <char*>(&B_len), sizeof(B_len)); 
             name.resize(N_len);    
-            program.resize(D_len); 
+            program.resize(P_len); 
             batch.resize(B_len);                              
             inFile.read(&name[0], N_len);
-            inFile.read(&program[0], D_len);
+            inFile.read(&program[0], P_len);
             inFile.read(&batch[0], B_len);
         }
     }
