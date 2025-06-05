@@ -82,12 +82,23 @@ class Student{
     
 };
 
-void to_upper_case(char &char_in)
+void char_to_upper(char &char_in)
 {
     if(char_in > 'Z')
     {
         char_in = int(char_in) - 32;
     }
+}
+void str_to_upper(std::string &in_str)
+{
+    std::string n_str = "";
+    for(char c : in_str)
+    {
+        char_to_upper(c);
+        n_str += c;
+    }
+    in_str = n_str;
+    return;
 }
 class StudentManagementSystem{
     private:
@@ -318,12 +329,13 @@ class StudentManagementSystem{
         getline(std::cin, name);
         std::cout << "Enter Student department: ";
         getline(std::cin, department);
+        str_to_upper(department);
         
         std::cout << "Enter Student Session (Y_From-To): ";
         getline(std::cin,batch );
         std::cout << "Enter Student class_Section (A,B,C): ";
         std::cin >> class_Section;
-        to_upper_case(class_Section);
+        char_to_upper(class_Section);
         if(std::cin.fail() || class_Section > 'Z' || class_Section < 'A')
         {
             flag();
@@ -345,11 +357,11 @@ class StudentManagementSystem{
         }
         Student s;
         outFile <<"Roll No." << std::setw(12);
-        outFile <<"Name" << '\t';
+        outFile <<"Name" << std::setw(18);
         outFile <<"Department" << std::setw(9);
         outFile <<"Batch" << std::setw(14);
         outFile <<"Section" << '\n';
-        outFile <<"_________________________________________________________" << '\n';
+        outFile <<"_____________________________________________________________" << '\n';
         
         while(inFile.peek() != EOF)
         {
@@ -358,7 +370,7 @@ class StudentManagementSystem{
             outFile << s.getroll() << std::setw(20);
             outFile << s.getname() << std::setw(10);
             outFile << s.getdepartment() << std::setw(12);
-            outFile << s.getbatch() << std::setw(8);
+            outFile << s.getbatch() << std::setw(10);
             outFile << s.getsection() << '\n';
             
         }
