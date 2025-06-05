@@ -162,6 +162,7 @@ class StudentManagementSystem{
         }else
         {
             int Sno = 1;
+            std::cout << "Displaying students of " << dep << " batch " << bat << " section: " << std::endl;
             while(inFile.peek() != EOF)
             {  
                 Student S;
