@@ -258,31 +258,25 @@ class StudentManagementSystem{
             return;
         }else
         {
+            std::ofstream outFile("student.bin", std::ios::binary | std::ios::trunc);
             while(inFile.peek() != EOF)
             {  
                 Student S;
                 S.Deserialize(inFile);
-                Students.push_back(S);
+                if(S.getroll()== rollNumber)
+                {   
+                    NewStudent.serialize(outFile);
+                    continue;
+                }
+                S.serialize(outFile);
                 
             }
-            for(auto it = Students.begin(); it != Students.end(); it++)
-            {
-                if(it->getroll()== rollNumber)
-                {   int index = distance(Students.begin(),it);
-                    Students[index ] = NewStudent;
-                    
-                }
-            }
-
-            std::ofstream outFile("student.bin", std::ios::binary | std::ios::trunc);
-            for (const auto& s : Students) {
-                s.serialize(outFile);
-            }
+            
             outFile.close();
-            Students.clear();
-            return;
-
+       
         }
+        
+        return;
     }
 
     void Header()
