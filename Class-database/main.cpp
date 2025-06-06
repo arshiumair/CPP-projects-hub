@@ -1,6 +1,5 @@
 #include <iostream>
 #include <string>
-#include <vector>
 #include <fstream>
 #include <iomanip>
 
@@ -52,6 +51,8 @@ class Student{
         outFile.write(name.c_str(), N_len);  
         outFile.write(program.c_str(), P_len); 
         outFile.write(batch.c_str(), B_len);
+
+        return;
     }
     
     void Deserialize(std::ifstream &inFile)
@@ -77,7 +78,9 @@ class Student{
             inFile.read(&name[0], N_len);
             inFile.read(&program[0], P_len);
             inFile.read(&batch[0], B_len);
+
         }
+        return;
     }
     
 };
@@ -101,60 +104,51 @@ void str_to_upper(std::string &in_str)
     return;
 }
 class StudentManagementSystem{
-    private:
-    std::vector <Student> Students;
+        
     public:
 
     //remove Student
     void removeStudent(int rollNumber, std::ifstream &inFile)
     {
 
-        if(inFile.eof())
+        if(inFile.peek() == EOF )
         {
-            
+            std::cout << "Empty file" << std::endl;
+            return;
         }else
         {
+           
+            std::ofstream outFile("student.bin", std::ios::binary | std::ios::trunc);
             while(inFile.peek() != EOF)
             {  
                 Student S;
                 S.Deserialize(inFile);
-                Students.push_back(S);
+                if(S.getroll()== rollNumber)
+                { 
+                    std::cout << "Student with roll no. " << rollNumber<< " has been removed successfully." << std::endl;  
+                    continue;
+                }
+                S.serialize(outFile);
                 
             }
-            for(auto it = Students.begin(); it != Students.end(); it++)
-            {
-                if(it->getroll()== rollNumber)
-                {   
-                    Students.erase(it);
-                    std::cout << "Student with roll no. " << rollNumber<< " has been removed successfully." << std::endl;
-
-                    std::ofstream outFile("student.bin", std::ios::binary | std::ios::trunc);
-                    for (const auto& s : Students) {
-                    s.serialize(outFile);
-                    }
-                    outFile.close();
-                    Students.clear();
-                    return;
-                    
-                }
-            }
             
-            std::cout << "Student with roll no. " << rollNumber<< " NOT found!" << std::endl;
-
-            Students.clear();
-            return; 
-
+            outFile.close();
+       
         }
+
+            
+        std::cout << "Student with roll no. " << rollNumber<< " NOT found!" << std::endl;
+
+        return; 
+
+        
         
     }
 
     //read objects from binary
 
-    
-
     void Show_all_Students(std::ifstream &inFile, std::string dep, std::string bat, char sec)
     {   
-    
     
         int Sno = 1;
         std::cout << "Displaying students of " << dep << " batch " << bat << " section: " << sec << std::endl;
@@ -275,7 +269,7 @@ class StudentManagementSystem{
             outFile.close();
        
         }
-        
+
         return;
     }
 
