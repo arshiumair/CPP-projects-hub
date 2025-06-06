@@ -164,7 +164,7 @@ class StudentManagementSystem{
                 std::cout << "      Depart.: " << S.getprogram()<<std::endl;
                 std::cout << "      Section: " << S.getsection()<<std::endl;
                 std::cout << "      Session: " << S.getbatch()<<std::endl;
-                std::cout << "___________________________________" << std::endl;
+                std::cout << std::string(35,'_') << std::endl;
                 Sno++;
             }
             
@@ -197,7 +197,7 @@ class StudentManagementSystem{
                     std::cout << "      Depart.: " << S.getprogram()<<std::endl;
                     std::cout << "      Section: " << S.getsection()<<std::endl;
                     std::cout << "      Session: " << S.getbatch()<<std::endl;
-                    std::cout << "___________________________________" << std::endl;
+                    std::cout << std::string(35,'_') << std::endl;
                 }
                 
             }
@@ -347,22 +347,24 @@ class StudentManagementSystem{
             return true;
         }
         Student s;
+        outFile << '\n';
+        outFile <<std::setw(41) << "Gomal University D.I.K" << '\n';
         outFile <<"Roll No." << std::setw(12);
         outFile <<"Name" << std::setw(18);
         outFile <<"Program" << std::setw(9);
         outFile <<"Batch" << std::setw(14);
         outFile <<"Section" << '\n';
-        outFile <<"_____________________________________________________________" << '\n';
+        outFile << std::string(61,'_');
         
         while(inFile.peek() != EOF)
         {
             s.Deserialize(inFile);
-
+            outFile << '\n';
             outFile << s.getroll() << std::setw(20);
             outFile << s.getname() << std::setw(10);
             outFile << s.getprogram() << std::setw(12);
             outFile << s.getbatch() << std::setw(10);
-            outFile << s.getsection() << '\n';
+            outFile << s.getsection() ;
             
         }
         return false;
@@ -520,9 +522,9 @@ int main()
                 }
                 
                 SMS.Show_all_Students(inFile, program, batch, class_Section);
-                std::cout << "1. Add Student\n0. Home" << std::endl;
+                std::cout << "1. Try again \n2. Add Student\n0. Home" << std::endl;
                 std::cin >> choice2;
-                (choice2 == '1')? choice = '1' : choice = '0'; 
+                (choice2 == '1')? choice = '4' : ((choice2 == '2' )? choice = '1' : choice = '0') ; 
 
                 inFile.close();
                 
